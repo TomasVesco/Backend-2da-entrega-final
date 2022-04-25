@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "timestamp": "07-04-2022 11:43:06 am",
+        "title": "Escuadra",
+        "price": 250,
+        "image": "https://cdn3.iconfinder.com/data/icons/education-209/64/ruler-triangle-stationary-school-256.png",
+        "description": "Para medir",
+        "stock": 100,
+        "code": "ventas"
+    },
+    {
+        "id": 2,
+        "timestamp": "07-04-2022 11:44:38 am",
+        "title": "Calculadora",
+        "price": 234.56,
+        "image": "https://cdn3.iconfinder.com/data/icons/education-209/64/calculator-math-tool-school-256.png",
+        "description": "Para calcular",
+        "stock": 100,
+        "code": "Ventas"
+    }
+]
