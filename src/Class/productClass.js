@@ -1,5 +1,7 @@
 const fs = require("fs");
-const moment = require("moment");
+
+const mongoose = require('mongoose');
+const mongoProducts = require('../../db/models/products');
 
 class ProductContainer {
   constructor(route) {
@@ -8,42 +10,33 @@ class ProductContainer {
 
   async updateById(id, newData) {
 
-    const products = await this.getAll();
-    const indexProduct = products.findIndex((product) => product.id === id);
-
-    const date = moment(new Date()).format("DD-MM-YYYY h:mm:ss a");
-
-    if (indexProduct === -1) return -1;
-
     const { title, price, image, description, stock, code } = newData;
+
     const newProduct = {
-      ...products[indexProduct],
       title,
       price,
       image,
       description,
       stock,
-      code,
-      timestamp: date
+      code
     };
-    products[indexProduct] = newProduct;
 
-    fs.writeFileSync(this.route, JSON.stringify(products, null, 4));
+    const productWithId = await mongoProducts.find({"_id": id});
 
-    return newProduct;
+    if(productWithId.length != 0){
+      await mongoProducts.updateOne({"_id": id},{$set: {"title": title, "price": price, "image": image, "description": description, "stock": stock, "code": code}});
+      return newProduct;
+    } else {
+      return -1;
+    }
   }
 
   async save(productToAdd) {
     try {
-    
+      
       const { title, price, image, description, stock, code } = productToAdd;
-      const products = await this.getAll();
-
-      const date = moment(new Date()).format("DD-MM-YYYY h:mm:ss a");
 
       const newProduct = {
-        id: products[products.length - 1].id + 1,
-        timestamp: date,
         title,
         price,
         image,
@@ -52,13 +45,7 @@ class ProductContainer {
         code,
       }
       
-      if(products[0].id === 0){
-        products.shift();
-      }
-
-      products.push(newProduct)
-
-      fs.writeFileSync(this.route, JSON.stringify(products, null, 4));
+      await mongoProducts.insertMany(newProduct);
 
       return newProduct;
 
@@ -69,21 +56,18 @@ class ProductContainer {
 
   async getById(id) {
     try {
-      id = parseInt(id);
 
-      const products = await this.getAll();
-
-      const IdFile = products.find((file) => file.id === id);
-
-      if (IdFile) {
-        return { ...IdFile, status: 200 };
+      if(id.length != 24){
+        return 1;
       } else {
-        return {
-          error: "ID not found",
-          description: `Product with ID:${id} does not exist`,
-          status: 404,
-        };
+        const productWithId = await mongoProducts.find({"_id": id});
+        if(productWithId.length != 0){
+          return productWithId;
+        } else {
+          return 2;
+        }
       }
+
     } catch (error) {
       console.log(error);
     }
@@ -92,16 +76,13 @@ class ProductContainer {
   async getAll() {
     try {
 
-      let readFile = await fs.promises.readFile(this.route, "utf-8");
+      let dbRead = await mongoProducts.find({});
 
-      if (readFile == "" || readFile == "[]") {
-        const obj = [{ id: 0 }];
-        fs.promises.writeFile(this.route, JSON.stringify(obj));
+      if (dbRead == "" || dbRead == "[]") {
+        return 'No hay productos en la base de datos';
       }
-
-      readFile = await fs.promises.readFile(this.route, "utf-8");
       
-      return JSON.parse(readFile);
+      return dbRead;
 
     } catch (error) {
       console.log(error);
@@ -110,25 +91,16 @@ class ProductContainer {
 
   async deleteById(id) {
 
-      if(!id) return -1;
+    const productWithId = await mongoProducts.find({"_id": id});
 
-      const products = await this.getAll()
-     
-      const productFound = products.find(product => product.id === parseInt(id))
+    if(productWithId.length != 0){
 
-      if(!productFound) return 0;
+      await mongoProducts.deleteOne({"_id": id});
 
-      const newProducts = products.filter(product => product.id !== parseInt(id))
+    } else {
+      return -1;
+    }
 
-      fs.promises.writeFile(this.route, JSON.stringify(newProducts, null, 4));
-
-      await this.getAll();
-
-      return 1;
-  }
-
-  async deleteAll() {
-    fs.promises.writeFile(this.route, "");
   }
 }
 

@@ -10,10 +10,17 @@ router.get("/:id?", async (req, res) => {
   try {
 
     const id = req.params.id || null;
-
+    
     if (id != null) {
-      const productId = await p.getById(id);
-      res.status(productId.status).send(productId);
+      const proceed = await p.getById(id);
+      if(proceed != (1, 2)){
+        res.status(200).send(proceed);
+      } else {
+        res.status(400).send({
+          error: "ID not found",
+          description: `Product with ID:${id} does not exist`,       
+        })
+      }
       return false;
     }
 
@@ -68,22 +75,45 @@ router.post("/", [isAdmin], async (req, res) => {
 router.put("/:id", [isAdmin], async (req, res) => {
   try {
 
-    const id = parseInt(req.params.id);
+    const id = req.params.id
 
     const { title, price, image, description, stock, code } = req.body;
 
-    const newProduct = { title, price, image, description, stock, code };
+    const propertyEmpty = [];
+    
+    for(const property in req.body) {
+      if(req.body[property] == ''){
+        propertyEmpty.push(property);
+      }
+    }
 
-    const response = await p.updateById(id, newProduct);
-
-    if (response !== -1) {
-
-      res.status(200).send(response);
-
-    } else {
+    if(id.length == 24){
+      if(propertyEmpty.length === 0){
+        
+        const newProduct = { title, price, image, description, stock, code };
+    
+        const response = await p.updateById(id, newProduct);
+    
+        if (response !== -1) {
+    
+          res.status(200).send(response);
+    
+        } else {
+          res.status(404).send({
+            error: "ID not found",
+            description: `Product with ID:${id} does not exist`,
+          });
+        }
+      } else {
+        res.status(404).send({
+          error: 'Argument null',
+          description: `The argument ${propertyEmpty} have been no completed`
+        });
+      }
+    }else{
       res.status(404).send({
         error: "ID not found",
-        description: `Product with ID:${id} does not exist`,
+        description: `Product with ID:${id} does not exist`
       });
     }
 
@@ -97,22 +127,25 @@ router.delete("/:id", [isAdmin], async (req, res) => {
 
     const id = req.params.id;
 
-    proceed = await p.deleteById(id);
+    const response = await p.deleteById(id);
 
-    if (proceed === 1) {
-      res.status(200).send("Product deleted");
-    } else if (proceed === 0) {
+    if(id.length == 24){
+      if(response !== -1){
+
+        res.status(200).send('Product eliminated');      
+
+      } else {
+        res.status(404).send({
+          error: "ID not found",
+          description: `Product with ID:${id} does not exist`,
+        }); 
+      }
+    } else {
       res.status(404).send({
         error: "ID not found",
         description: `Product with ID:${id} does not exist`,
       });
-    } else if (proceed === -1) {   
-      res.status(404).send({
-        error: "ID is a character",
-        description: `Only numbers are accepted`,
-      });
     }
-    
 
   } catch (err) {
     res.status(404).send(err);
