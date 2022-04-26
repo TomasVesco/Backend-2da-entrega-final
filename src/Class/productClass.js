@@ -57,16 +57,9 @@ class ProductContainer {
   async getById(id) {
     try {
 
-      if(id.length != 24){
-        return 1;
-      } else {
         const productWithId = await mongoProducts.find({"_id": id});
-        if(productWithId.length != 0){
-          return productWithId;
-        } else {
-          return 2;
-        }
-      }
+
+        return productWithId;
 
     } catch (error) {
       console.log(error);
@@ -76,13 +69,13 @@ class ProductContainer {
   async getAll() {
     try {
 
-      let dbRead = await mongoProducts.find({});
+      let dbProductRead = await mongoProducts.find({});
 
-      if (dbRead == "" || dbRead == "[]") {
+      if(dbProductRead.length != 0){
+        return dbProductRead;
+      } else {
         return 'No hay productos en la base de datos';
       }
-      
-      return dbRead;
 
     } catch (error) {
       console.log(error);

@@ -11,21 +11,29 @@ router.get("/:id?", async (req, res) => {
 
     const id = req.params.id || null;
     
-    if (id != null) {
-      const proceed = await p.getById(id);
-      if(proceed != (1, 2)){
-        res.status(200).send(proceed);
-      } else {
-        res.status(400).send({
-          error: "ID not found",
-          description: `Product with ID:${id} does not exist`,       
-        })
-      }
-      return false;
-    }
+    if(id != null){
+      if(id.length == 24){
+        let productWithID = await p.getById(id);
+        if(productWithID.length != 0){
 
-    products = await p.getAll();
-    res.status(200).send(products);
+          res.status(200).send(productWithID);
+
+        } else {
+          res.status(404).send({
+            error: "ID not found",
+            description: `Product with ID:${id} does not exist`,
+          });          
+        }
+      } else {
+        res.status(404).send({
+          error: "ID not found",
+          description: `Product with ID:${id} does not exist`,
+        });
+      }
+    } else {
+      let products = await p.getAll();
+      res.status(200).send(products);
+    }
 
   } catch (err) {
     res.status(404).send(err);

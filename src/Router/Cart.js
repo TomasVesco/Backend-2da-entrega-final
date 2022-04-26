@@ -13,12 +13,24 @@ router.get('/:id/productos', async (req, res) => {
 
         const id = req.params.id;
 
-        const productsByCartId = await c.getById(id);
+        if(id.length == 24){
 
-        if(productsByCartId != -1){
-            res.status(productsByCartId.status).send(productsByCartId);
-        } else{
-            res.status(200).send(`The are no products in the cart with ID:${id}`);
+            let cartWithID = await c.getById(id);
+
+            if(cartWithID.length != 0){
+                res.status(200).send(cartWithID);
+            } else {
+                res.status(404).send({
+                    error: 'ID not found',
+                    description: `Cart with ID:${id} does not exist`,
+                });                 
+            }
+
+        } else {
+            res.status(404).send({
+                error: 'ID not found',
+                description: `Cart with ID:${id} does not exist`,
+            });            
         }
 
     } catch(err) {
@@ -41,38 +53,44 @@ router.post('/', async (req, res) => {
 router.post('/:id/productos', async (req, res) => {
     try{
 
-        const id = req.params.id;
+        const cartID = req.params.id;
 
-        const { productId } = req.body;
+        const { productID } = req.body;
 
-        const existProductId = await p.getById(productId);
+        const existProductID = await p.getById(productID);
 
-        const existCartId = await c.getById(id);
+        const existCartID = await c.getById(cartID);
 
-        if(!isNaN(productId)){
-            if(existProductId.id != 0 && existProductId.id != undefined){
-                if(existCartId.status === 200 || existCartId === -1){
-                    
-                    const cart = await c.save(existProductId, id);
+        if(cartID.length == 24){
+            if(productID.length == 24){
+                if(existCartID.length != 0){
+                    if(existProductID.length != 0){
 
-                    res.status(200).send({200: `Product added to cart with ID:${id}`});
+                        await c.save(existProductID, existCartID);
+                        res.status(200).send('Post ok');
 
+                    } else {
+                        res.status(404).send({
+                            error: 'ID not found',
+                            description: `Product with ID:${productID} does not exist`,
+                        });  
+                    }
                 } else {
                     res.status(404).send({
                         error: 'ID not found',
-                        description: `Cart with ID:${id} does not exist`,
-                    });
+                        description: `Cart with ID:${cartID} does not exist`,
+                    });                    
                 }
             } else {
                 res.status(404).send({
                     error: 'ID not found',
-                    description: `Product with ID:${productId} does not exist`
-                }); 
+                    description: `Product with ID:${productID} does not exist`,
+                });                
             }
         } else {
             res.status(404).send({
-                error: 'ID is a character',
-                description: `Only numbers are accepted`
+                error: 'ID not found',
+                description: `Cart with ID:${cartID} does not exist`,
             });
         }
 
@@ -83,29 +101,26 @@ router.post('/:id/productos', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     try{
-
+ 
         const id = req.params.id;
 
-        const existCartId = await c.getById(id);
+        if(id.length == 24){
 
-        if(!isNaN(id)){
-            if(existCartId.status === 200){
+            const response = await c.deleteAllCartId(id);
 
-                await c.deleteAllCartId(id);
-
-                res.status(200).send({200: 'Delete ok'});
-
+            if(response != 1){
+                res.status(200).send('Delete ok');
             } else {
-                res.status(existCartId.status).send({
+                res.status(404).send({
                     error: 'ID not found',
                     description: `Cart with ID:${id} does not exist`,
-                });
+                }); 
             }
         } else {
             res.status(404).send({
-                error: 'ID is a character',
-                description: `Only numbers are accepted`
-            });
+                error: 'ID not found',
+                description: `Cart with ID:${id} does not exist`,
+            });   
         }
 
     } catch(err){
@@ -116,30 +131,50 @@ router.delete('/:id', async (req, res) => {
 router.delete('/:id/productos/:id_prod', async (req, res) => {
     try{
 
-        const cartParamsId = req.params.id;
-        const productParamsId = req.params.id_prod;
+        const cartParamsID = req.params.id;
+        const productParamsID = req.params.id_prod;
 
-        const existCartId = await c.getById(cartParamsId);
-        const existProductId = await p.getById(productParamsId);
+        const existCartID = await c.getById(cartParamsID);
+        const existProductID = await p.getById(productParamsID);
 
-        if(existProductId.status === 200){
-            if(existCartId.status != 404){
+        if(cartParamsID.length == 24){
+            if(productParamsID.length == 24){
+                if(existCartID.length != 0){
+                    if(existProductID != 0){
+                        
+                        const response = await c.deleteByCartAndProductId(existCartID, existProductID);
+                        if(response != 1){
+                            res.status(200).send('Delete ok');
+                        } else {
+                            res.status(404).send({
+                                error: 'Product not found',
+                                description: `Product with ID:${productParamsID} does not exist in the cart`,
+                            });
+                        }
 
-                const response = await c.deleteByCartAndProductId(cartParamsId, productParamsId);
-
-                res.status(response.status).send(response);
-
+                    } else {
+                        res.status(404).send({
+                            error: 'ID not found',
+                            description: `Product with ID:${productParamsID} does not exist`,
+                        });
+                    }
+                } else {
+                    res.status(404).send({
+                        error: 'ID not found',
+                        description: `Cart with ID:${cartParamsID} does not exist`,
+                    }); 
+                }
             } else {
                 res.status(404).send({
                     error: 'ID not found',
-                    description: `Cart with ID:${cartParamsId} does not exist`,
+                    description: `Product with ID:${productParamsID} does not exist`,
                 });
             }
         } else {
             res.status(404).send({
                 error: 'ID not found',
-                description: `Product with ID:${productParamsId} does not exist`
-            }); 
+                description: `Cart with ID:${cartParamsID} does not exist`,
+            });           
         }
 
     } catch(err){
