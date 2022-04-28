@@ -4,31 +4,36 @@ const serviceAccount = require("../../db/Firestore.json");
 class ProductContainer {
 
     async updateById(id, newData) {
+        try{
 
-        const db = admin.firestore();
-        const query = db.collection('products');
+            const db = admin.firestore();
+            const query = db.collection('products');
+    
+            const { title, price, image, description, stock, code } = newData;
+    
+            const newProduct = {
+                title,
+                price,
+                image,
+                description,
+                stock,
+                code
+            };
+    
+            let productWithID = await this.getById(id);
+    
+            if(productWithID.length != 0){
+                
+                const doc = query.doc(`${id}`);
+                await doc.update(newProduct);
+                return newProduct;
+    
+            } else {
+                return -1;
+            }
 
-        const { title, price, image, description, stock, code } = newData;
-
-        const newProduct = {
-            title,
-            price,
-            image,
-            description,
-            stock,
-            code
-        };
-
-        let productWithID = await this.getById(id);
-
-        if(productWithID.length != 0){
-            
-            const doc = query.doc(`${id}`);
-            await doc.update(newProduct);
-            return newProduct;
-
-        } else {
-            return -1;
+        }catch(err){
+            console.log(err);
         }
     }
 

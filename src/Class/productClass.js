@@ -4,6 +4,7 @@ const mongoProducts = require('../../db/models/products');
 class ProductContainer {
 
   async updateById(id, newData) {
+    try{
 
     const { title, price, image, description, stock, code } = newData;
 
@@ -23,6 +24,10 @@ class ProductContainer {
       return newProduct;
     } else {
       return -1;
+    }
+
+    }catch(err){
+      console.log(err);
     }
   }
 
@@ -78,17 +83,21 @@ class ProductContainer {
   }
 
   async deleteById(id) {
+    try{
 
-    const productWithId = await mongoProducts.find({"_id": id});
+      const productWithId = await mongoProducts.find({"_id": id});
 
-    if(productWithId.length != 0){
+      if(productWithId.length != 0){
+  
+        await mongoProducts.deleteOne({"_id": id});
+  
+      } else {
+        return -1;
+      }
 
-      await mongoProducts.deleteOne({"_id": id});
-
-    } else {
-      return -1;
+    }catch(err){
+      console.log(err);
     }
-
   }
 }
 

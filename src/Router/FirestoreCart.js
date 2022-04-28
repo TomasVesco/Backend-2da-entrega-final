@@ -2,10 +2,10 @@ const { Router } = require('express');
 
 const router = Router();
 
-const CartContainer = require('../Class/cartClass');
+const CartContainer = require('../Class/FireStoreCartClass');
 const c = new CartContainer();
 
-const ProductContainer = require('../Class/productClass');
+const ProductContainer = require('../Class/FireStoreProductClass');
 const p = new ProductContainer();
 
 router.get('/:id/productos', async (req, res) => {
