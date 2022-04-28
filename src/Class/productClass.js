@@ -1,12 +1,7 @@
-const fs = require("fs");
-
 const mongoose = require('mongoose');
 const mongoProducts = require('../../db/models/products');
 
 class ProductContainer {
-  constructor(route) {
-    this.route = route;
-  }
 
   async updateById(id, newData) {
 

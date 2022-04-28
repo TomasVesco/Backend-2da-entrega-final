@@ -1,13 +1,7 @@
-const fs = require('fs');
-
 const mongoose = require('mongoose');
 const mongoCart = require('../../db/models/cart');
 
 class CartContainer {
-
-    constructor( route ) {
-        this.route = route;
-    }
 
     async createCart() {
         try {

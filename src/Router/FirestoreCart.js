@@ -3,10 +3,10 @@ const { Router } = require('express');
 const router = Router();
 
 const CartContainer = require('../Class/cartClass');
-const c = new CartContainer('./src/Files/cart.txt');
+const c = new CartContainer();
 
 const ProductContainer = require('../Class/productClass');
-const p = new ProductContainer('./src/Files/products.txt');
+const p = new ProductContainer();
 
 router.get('/:id/productos', async (req, res) => {
     try {

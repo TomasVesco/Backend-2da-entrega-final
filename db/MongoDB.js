@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-MONGO()
+MONGO();
 
 async function MONGO() {
     try{

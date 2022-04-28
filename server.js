@@ -1,14 +1,16 @@
-const express = require('express');
+//SERVER
 const server = require('./src/app');
 
-const dotenv = require('dotenv').config();
-const app = express();
+//firestore cfg
+const FIRESTORE = require('./db/Firestore');
 
+//mongo cfg
 const MONGO = require('./db/MongoDB');
 
 const PORT = 8080;
 
-server.listen( PORT, () => {
+server.listen( PORT, async () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
     MONGO;
+    FIRESTORE;
 });

@@ -3,8 +3,8 @@ const { isAdmin } = require("../Middlewares/isAdmin");
 
 const router = Router();
 
-const ProductContainer = require("../Class/productClass");
-const p = new ProductContainer("./src/Files/products.txt");
+const ProductContainer = require("../Class/FireStoreProductClass");
+const p = new ProductContainer();
 
 router.get("/:id?", async (req, res) => {
   try {
@@ -12,7 +12,7 @@ router.get("/:id?", async (req, res) => {
     const id = req.params.id || null;
     
     if(id != null){
-      if(id.length == 24){
+      if(id.length == 20){
         let productWithID = await p.getById(id);
         if(productWithID.length != 0){
 
@@ -95,7 +95,7 @@ router.put("/:id", [isAdmin], async (req, res) => {
       }
     }
 
-    if(id.length == 24){
+    if(id.length == 20){
       if(propertyEmpty.length === 0){
         
         const newProduct = { title, price, image, description, stock, code };
@@ -137,7 +137,7 @@ router.delete("/:id", [isAdmin], async (req, res) => {
 
     const response = await p.deleteById(id);
 
-    if(id.length == 24){
+    if(id.length == 20){
       if(response !== -1){
 
         res.status(200).send('Product eliminated');      
