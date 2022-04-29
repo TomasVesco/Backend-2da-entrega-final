@@ -1,5 +1,4 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("../../db/Firestore.json");
 
 class ProductContainer {
 
@@ -71,7 +70,7 @@ class ProductContainer {
 
             let productWithID = [];
 
-            if(typeof(products) == Object){
+            if(products[0] !== 'N'){
                 products.forEach(doc => {
                     if(id == doc.id){
                         productWithID = doc;

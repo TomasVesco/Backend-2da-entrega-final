@@ -1,16 +1,40 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("../../db/Firestore.json");
+const moment = require('moment');
 
 class CartContainer {
 
     async createCart() {
         try {
 
-            await mongoCart.insertMany({});
+            const db = admin.firestore();
+            const query = db.collection('carts');
+            let doc = query.doc();
 
-            let lastCartCreatedID = await mongoCart.find({},{"_id": true}).sort({$natural:-1}).limit(1);
+            let date = moment(new Date()).format('DD-MM-YYYY h:mm:ss a');
+            let IDofNewCart = '';
 
-            return lastCartCreatedID;
+            await doc.create({
+                timestamp: date,
+                products: []
+            });
+
+            const cartsRead = await this.getAll();
+
+            let dates = [];
+
+            cartsRead.forEach(doc => {
+                dates.push(doc.data().timestamp);
+            });
+
+            dates = dates.sort();
+            
+            cartsRead.forEach(doc => {
+                if(doc.data().timestamp === dates[dates.length - 1]){
+                    IDofNewCart = doc.id;
+                }
+            });
+
+            return IDofNewCart;
 
         } catch(error) {
             console.log(error);
@@ -20,9 +44,25 @@ class CartContainer {
     async save(productToAdd, currentCartToAdd) { 
         try {
 
-            const { title, price, description, image, stock, code } = productToAdd[0];
+            const db = admin.firestore();
+            const query = db.collection('carts');
 
-            await mongoCart.updateOne({"_id": currentCartToAdd[0]._id},{$push: {products: {"title": title, "price": price, "image": image, "description": description, "stock": stock, "code": code}}});
+            let date = moment(new Date()).format('DD-MM-YYYY h:mm:ss a');
+
+            const product = {
+                id: productToAdd.id,
+                title: productToAdd.data().title,
+                price: productToAdd.data().price,
+                image: productToAdd.data().image,
+                stock: productToAdd.data().stock,
+                description: productToAdd.data().description,
+                code: productToAdd.data().code
+            }
+
+            await query.doc(`${currentCartToAdd.id}`).set({
+                timestamp: date,
+                products: [...currentCartToAdd.data().products, product]
+            });
 
         } catch(error) {
             console.log(error);
@@ -32,38 +72,75 @@ class CartContainer {
     async getById(id) {
         try {
 
-            const cartWithID = await mongoCart.find({"_id": id});
+            const carts = await this.getAll();
+
+            let cartWithID = [];
+
+            if(carts[0] !== 'N'){
+                carts.forEach(doc => {
+                    if(id == doc.id){
+                        cartWithID = doc;
+                    }
+                });
+            }
 
             return cartWithID;
 
-        } catch(error) {
+        } catch (error) {
             console.log(error);
         }
     }
 
     async getAll() {
-        try {
-
-            let dbCartRead = await mongoCart.find({});
-            
+        try { 
+        
+            const db = admin.firestore();
+            const query = db.collection('carts');
+    
+            const querySnapshot = await query.get();
+    
+            let dbCartRead = await querySnapshot.docs;
+    
             if(dbCartRead.length != 0){
                 return dbCartRead;
             } else {
-                return 'El carrito está vacío';
+                return 'No hay productos en el carrito';
             }
-
-        } catch(error) {
-            console.log(error);
+    
+        } catch (error) {
+        console.log(error);
         }
     }
 
     async deleteByCartAndProductId( currentCartToDelete, productToDelete) {
         try {
 
-            const productInCartID = await mongoCart.find({"_id": currentCartToDelete[0]._id});
+            const db = admin.firestore();
+            const query = db.collection('carts');
 
-            if(productInCartID[0].products.length != 0){
-                return await mongoCart.updateOne({"_id": currentCartToDelete[0]._id},{$pull: {products: {"title": productToDelete[0].title}}});
+            let date = moment(new Date()).format('DD-MM-YYYY h:mm:ss a');
+
+            const newCart = currentCartToDelete.data();
+
+            let exist = false;
+
+            currentCartToDelete.data().products.forEach(e => {
+                if(e.id === productToDelete.id){
+                    exist = true;
+                }
+            })   
+
+            if(newCart.products.length != 0){
+                if(exist){
+                    newCart.products.splice(productToDelete.data(), 1);
+
+                    await query.doc(`${currentCartToDelete.id}`).set({
+                        timestamp: date,
+                        products: newCart.products
+                    });
+                } else {
+                    return 1;
+                }
             } else {
                 return 1;
             }
@@ -76,10 +153,15 @@ class CartContainer {
     async deleteAllCartId(id) {
         try {
 
+            const db = admin.firestore();
+            const query = db.collection('carts');
+            const doc = query.doc(`${id}`);
+            
             const proceed = await this.getById(id);
-            if(proceed.length != 0){
 
-                await mongoCart.deleteOne({'_id': id});
+            if(proceed.length == undefined){
+                
+                await doc.delete();
 
             } else {
                 return 1;

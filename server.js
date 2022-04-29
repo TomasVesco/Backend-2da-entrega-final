@@ -11,6 +11,4 @@ const PORT = 8080;
 
 server.listen( PORT, async () => {
     console.log(`Servidor escuchando en el puerto ${PORT}`);
-    MONGO;
-    FIRESTORE;
 });

@@ -13,7 +13,7 @@ router.get('/:id/productos', async (req, res) => {
 
         const id = req.params.id;
 
-        if(id.length == 24){
+        if(id.length == 20){
 
             let cartWithID = await c.getById(id);
 
@@ -41,9 +41,9 @@ router.get('/:id/productos', async (req, res) => {
 router.post('/', async (req, res) => {
     try {
 
-        IdOfNewCart = await c.createCart();
+        IDofNewCart = await c.createCart();
 
-        res.status(200).send({IdOfNewCart});
+        res.status(200).send(`ID del nuevo carrito: ${IDofNewCart}`);
 
     } catch(err) {
         res.status(404).send(err);
@@ -61,8 +61,8 @@ router.post('/:id/productos', async (req, res) => {
 
         const existCartID = await c.getById(cartID);
 
-        if(cartID.length == 24){
-            if(productID.length == 24){
+        if(cartID.length == 20){
+            if(productID.length == 20){
                 if(existCartID.length != 0){
                     if(existProductID.length != 0){
 
@@ -104,7 +104,7 @@ router.delete('/:id', async (req, res) => {
  
         const id = req.params.id;
 
-        if(id.length == 24){
+        if(id.length == 20){
 
             const response = await c.deleteAllCartId(id);
 
@@ -137,8 +137,8 @@ router.delete('/:id/productos/:id_prod', async (req, res) => {
         const existCartID = await c.getById(cartParamsID);
         const existProductID = await p.getById(productParamsID);
 
-        if(cartParamsID.length == 24){
-            if(productParamsID.length == 24){
+        if(cartParamsID.length == 20){
+            if(productParamsID.length == 20){
                 if(existCartID.length != 0){
                     if(existProductID != 0){
                         
