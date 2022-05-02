@@ -2,10 +2,10 @@ const { Router } = require('express');
 
 const router = Router();
 
-const CartContainer = require('../Class/FireStoreCartClass');
+const CartContainer = require('../DAO/FireStoreCartClass');
 const c = new CartContainer();
 
-const ProductContainer = require('../Class/FireStoreProductClass');
+const ProductContainer = require('../DAO/FireStoreProductClass');
 const p = new ProductContainer();
 
 router.get('/:id/productos', async (req, res) => {

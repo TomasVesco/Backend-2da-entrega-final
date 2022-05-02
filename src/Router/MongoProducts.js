@@ -3,7 +3,7 @@ const { isAdmin } = require("../Middlewares/isAdmin");
 
 const router = Router();
 
-const ProductContainer = require("../Class/productClass");
+const ProductContainer = require("../DAO/productClass");
 const p = new ProductContainer();
 
 router.get("/:id?", async (req, res) => {

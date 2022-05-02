@@ -1,7 +1,7 @@
 const express = require('express');
 const { json } = require('express');
 
-const db = 'firestore';
+const db = 'filesystem';
 
 let products;
 let cart;
@@ -11,7 +11,13 @@ switch(db){
         console.log('Conectandose a MongoDB...');
         products = require('./Router/MongoProducts');
         cart = require('./Router/MongoCart');
-        break
+        break;
+
+    case 'filesystem':
+        console.log('Conecandose a Filesystem');
+        products = require('./Router/FileSystemProduct');
+        cart = require('./Router/FileSystemCart');
+        break;
     
     default:
         console.log('Conectandose a Firestore...');
