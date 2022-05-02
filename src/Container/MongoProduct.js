@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const mongoProducts = require('../../db/models/products');
 
-class ProductContainer {
+class MongoProductContainer {
 
   async updateById(id, newData) {
     try{
@@ -101,4 +101,4 @@ class ProductContainer {
   }
 }
 
-module.exports = ProductContainer;
+module.exports = MongoProductContainer;

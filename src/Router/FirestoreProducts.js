@@ -3,7 +3,7 @@ const { isAdmin } = require("../Middlewares/isAdmin");
 
 const router = Router();
 
-const ProductContainer = require("../DAO/FireStoreProductClass");
+const ProductContainer = require("../DAO/DAOFireStoreProductClass");
 const p = new ProductContainer();
 
 router.get("/:id?", async (req, res) => {
@@ -32,7 +32,13 @@ router.get("/:id?", async (req, res) => {
       }
     } else {
       let products = await p.getAll();
-      res.status(200).send(products);
+
+      let arrayOfProducts = [];
+      products.forEach(product => {
+        arrayOfProducts.push(product.data());
+      });
+
+      res.status(200).send(arrayOfProducts);
     }
 
   } catch (err) {

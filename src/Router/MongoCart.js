@@ -2,10 +2,10 @@ const { Router } = require('express');
 
 const router = Router();
 
-const CartContainer = require('../DAO/cartClass');
+const CartContainer = require('../DAO/DAOMongoCart');
 const c = new CartContainer();
 
-const ProductContainer = require('../DAO/productClass');
+const ProductContainer = require('../DAO/DAOMongoProduct');
 const p = new ProductContainer();
 
 router.get('/:id/productos', async (req, res) => {

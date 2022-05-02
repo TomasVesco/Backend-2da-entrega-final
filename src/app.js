@@ -1,7 +1,7 @@
 const express = require('express');
 const { json } = require('express');
 
-const db = 'filesystem';
+const db = 'firestore';
 
 let products;
 let cart;

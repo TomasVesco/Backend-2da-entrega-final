@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const mongoCart = require('../../db/models/cart');
 
-class CartContainer {
+class MongoCartContainer {
 
     async createCart() {
         try {
@@ -91,4 +91,4 @@ class CartContainer {
     }
 }
 
-module.exports = CartContainer;
+module.exports = MongoCartContainer;

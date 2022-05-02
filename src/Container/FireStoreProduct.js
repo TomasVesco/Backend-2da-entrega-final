@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 
-class ProductContainer {
+class FireStoreProductContainer {
 
     async updateById(id, newData) {
         try{
@@ -129,4 +129,4 @@ class ProductContainer {
   }
 }
 
-module.exports = ProductContainer;
+module.exports = FireStoreProductContainer;

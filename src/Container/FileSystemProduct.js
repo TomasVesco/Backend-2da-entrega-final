@@ -1,7 +1,8 @@
 const fs = require("fs");
 const moment = require("moment");
 
-class ProductContainer {
+class FileSystemProductContainer {
+  
   constructor(route) {
     this.route = route;
   }
@@ -132,4 +133,4 @@ class ProductContainer {
   }
 }
 
-module.exports = ProductContainer;
+module.exports = FileSystemProductContainer;

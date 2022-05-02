@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const moment = require('moment');
 
-class CartContainer {
+class FireStoreCartContainer {
 
     async createCart() {
         try {
@@ -173,4 +173,4 @@ class CartContainer {
     }
 }
 
-module.exports = CartContainer;
+module.exports = FireStoreCartContainer;

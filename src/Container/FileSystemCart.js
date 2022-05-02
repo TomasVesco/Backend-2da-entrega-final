@@ -1,7 +1,7 @@
 const fs = require('fs');
 const moment = require('moment');
 
-class CartContainer {
+class FileSystemCartContainer {
 
     constructor( route ) {
         this.route = route;
@@ -95,7 +95,7 @@ class CartContainer {
             } else {
                 return {
                     error: 'ID not found',
-                    description: `Only numbers are acepted`,
+                    description: `Cart with ID:${id} does not exist`,
                     status: 404
                 }
             }
@@ -185,4 +185,4 @@ class CartContainer {
     }
 }
 
-module.exports = CartContainer;
+module.exports = FileSystemCartContainer;
